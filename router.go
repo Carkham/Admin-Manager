@@ -14,4 +14,5 @@ func customRouter(r *gin.Engine) {
 	r.POST("/api/admin/functions/:function_id/start", handler.StartFuncHandler)
 	r.POST("/api/admin/functions/:function_id/stop", handler.StopFuncHandler)
 	r.POST("/api/admin/functions/:function_id", handler.DeleteFuncHandler)
+	r.GET("/api/admin/users", handler.GetUsersInfo)
 }
