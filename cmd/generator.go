@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-const MysqlConfig = "root:zhax040214@(localhost:3306)/faas_project_data"
+const MysqlConfig = "root:buaase2023@(139.9.143.161:3306)/faas_project_data"
 
 func main() {
 	db, err := gorm.Open(mysql.Open(MysqlConfig))
