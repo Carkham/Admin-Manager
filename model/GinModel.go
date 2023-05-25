@@ -60,3 +60,14 @@ type UserInfo struct {
 	IsAdmin   bool   `json:"is_admin"`
 	Email     string `json:"email"`
 }
+
+type CreateUserReq struct {
+	Username string `json:"user_name"`
+	Email    string `json:"email"`
+	IsAdmin  bool   `json:"is_admin"`
+	Password string `json:"password"`
+}
+
+type CreateUserResp struct {
+	UserId int64 `json:"user_id"`
+}
