@@ -1,0 +1,30 @@
+name: "go test"
+
+on:
+  pull_request:
+    branches: [ "master", "main", "release", "dev" ]
+
+jobs:
+  test:
+    name: "go test"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout Github Action"
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: "Set up Go"
+        uses: actions/setup-go@v4
+        with:
+          go-version: "stable"
+      
+      - name: "Generate Mocks and Run Tests"
+        run: |
+          go install github.com/golang/mock/mockgen@latest
+          go test -race -coverprofile=coverage.out -covermode=atomic
+      
+      - name: "Upload coverage reports to Codecov"
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
