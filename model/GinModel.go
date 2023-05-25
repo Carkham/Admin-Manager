@@ -52,3 +52,22 @@ type CreateTemplateReq struct {
 type CreateTemplateResp struct {
 	TemplateId int `json:"template_id"`
 }
+
+type UserInfo struct {
+	UserId    int    `json:"user_id"`
+	UserName  string `json:"user_name"`
+	LastLogin string `json:"last_login"`
+	IsAdmin   bool   `json:"is_admin"`
+	Email     string `json:"email"`
+}
+
+type CreateUserReq struct {
+	Username string `json:"user_name"`
+	Email    string `json:"email"`
+	IsAdmin  bool   `json:"is_admin"`
+	Password string `json:"password"`
+}
+
+type CreateUserResp struct {
+	UserId int64 `json:"user_id"`
+}
