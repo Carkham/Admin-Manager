@@ -16,4 +16,5 @@ func customRouter(r *gin.Engine) {
 	r.POST("/api/admin/functions/:function_id", handler.DeleteFuncHandler)
 	r.GET("/api/admin/users", handler.GetUsersInfo)
 	r.PUT("/api/admin/users", handler.CreateUser)
+	r.DELETE("DELETE /api/admin/user/${user_id}", handler.DeleteUser)
 }

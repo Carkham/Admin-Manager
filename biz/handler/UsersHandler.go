@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func GetUsersInfo(ctx *gin.Context) {
@@ -141,6 +142,31 @@ func CreateUser(ctx *gin.Context) {
 		UserId: newUser.ID,
 	}
 	jsonResp := utils.SetOKResp(respData, nil)
+	ctx.JSON(http.StatusOK, jsonResp)
+	return
+}
+
+func DeleteUser(ctx *gin.Context) {
+	userIDStr := ctx.Param("user_id")
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
+	if err != nil {
+		errMsg := fmt.Sprintf("[Delete User] Parse Parameter Error: %s", err.Error())
+		log.Print(errMsg)
+		jsonResp := utils.SetBadRequestResp(nil, errMsg)
+		ctx.JSON(http.StatusBadRequest, jsonResp)
+		return
+	}
+
+	_, err = model.Q.UserUser.Where(model.Q.UserUser.ID.Eq(userID)).Delete()
+	if err != nil {
+		errMsg := fmt.Sprintf("[Delete User] Delete User Error: %s", err.Error())
+		log.Print(errMsg)
+		jsonResp := utils.SetBadRequestResp(nil, errMsg)
+		ctx.JSON(http.StatusInternalServerError, jsonResp)
+		return
+	}
+
+	jsonResp := utils.SetOKResp(nil, nil)
 	ctx.JSON(http.StatusOK, jsonResp)
 	return
 }
