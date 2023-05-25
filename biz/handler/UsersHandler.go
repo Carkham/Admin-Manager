@@ -27,7 +27,7 @@ func GetUsersInfo(ctx *gin.Context) {
 		userInfoList = append(userInfoList, model.UserInfo{
 			UserId:    int(userUser.ID),
 			UserName:  userUser.Username,
-			LastLogin: userUser.LastLogin.Format("YYYY-MM-DD hh:mm"),
+			LastLogin: userUser.LastLogin.Format("2006-01-02 15:04"),
 			IsAdmin:   userUser.IsStaff,
 			Email:     userUser.Email,
 		})
