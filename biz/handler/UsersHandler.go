@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"admin/biz/service"
 	"admin/model"
+	Function "admin/model/model"
 	UserUser "admin/model/model"
 	"admin/utils"
 	"fmt"
@@ -155,6 +157,25 @@ func DeleteUser(ctx *gin.Context) {
 		jsonResp := utils.SetBadRequestResp(nil, errMsg)
 		ctx.JSON(http.StatusBadRequest, jsonResp)
 		return
+	}
+
+	// 检查函数是否还在运行
+	var functions []Function.Function
+	err = model.Q.Function.Where(model.Q.Function.UserID.Eq(userID)).Scan(&functions)
+	for _, v := range functions {
+		runningList, _ := utils.GetPodInfoList(v.FunctionID)
+		if len(runningList) > 0 {
+			errMsg := fmt.Sprintf("[Delete User] Delete User Error: function is still running")
+			log.Print(errMsg)
+			jsonResp := utils.SetServerErrorResp(nil, errMsg)
+			ctx.JSON(http.StatusBadRequest, jsonResp)
+			return
+		}
+	}
+
+	// 删除所有函数
+	for _, v := range functions {
+		_ = service.DeleteFunc(v.FunctionID)
 	}
 
 	_, err = model.Q.UserUser.Where(model.Q.UserUser.ID.Eq(userID)).Delete()

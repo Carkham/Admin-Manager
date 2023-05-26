@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"admin/biz/service"
 	"admin/model"
 	"admin/utils"
 	"fmt"
@@ -11,28 +12,14 @@ import (
 )
 
 func GetFuncInfo(ctx *gin.Context) {
-	var allFunc []model.FuncList
-	// todo 获取单个用户的函数信息
-	var funcInfoList []model.FuncInfo
-	funcInfo := model.FuncInfo{
-		NodeName: "",
-		CpuUsage: 0,
-		MemUsage: 0,
-		GpuUsage: 0,
-		State:    "",
+	allFunc, err := service.GetFunctionList()
+	if err != nil {
+		errMsg := fmt.Sprintf("[Get FuncInfo] Get FuncInfo Error: %s", err.Error())
+		log.Print(errMsg)
+		jsonResp := utils.SetBadRequestResp(nil, errMsg)
+		ctx.JSON(http.StatusInternalServerError, jsonResp)
+		return
 	}
-	funcInfoList = append(funcInfoList, funcInfo)
-	// todo 获取全部函数信息
-	funcList := model.FuncList{
-		UserName:     "",
-		FunctionId:   0,
-		FunctionName: "",
-		TemplateName: "",
-		State:        "",
-		ReplicasInfo: funcInfoList,
-	}
-	allFunc = append(allFunc, funcList)
-
 	// 返回
 	respData := model.GetListResp{
 		Total: len(allFunc),
@@ -54,8 +41,9 @@ func StartFuncHandler(ctx *gin.Context) {
 		return
 	}
 
-	// todo 启动镜像
-	err = utils.FuncStart(functionID)
+	// 启动镜像
+	err = service.StartFunc(functionID)
+
 	if err != nil {
 		errMsg := fmt.Sprintf("[Start Function] Start Function Error: %s", err.Error())
 		log.Print(errMsg)
@@ -81,8 +69,8 @@ func StopFuncHandler(ctx *gin.Context) {
 		return
 	}
 
-	// todo 停止函数
-	err = utils.FuncStop(functionID)
+	// 停止函数
+	err = service.StopFunc(functionID)
 
 	if err != nil {
 		errMsg := fmt.Sprintf("[Stop Function] Stop Function Error: %s", err.Error())
@@ -109,8 +97,8 @@ func DeleteFuncHandler(ctx *gin.Context) {
 		return
 	}
 
-	// todo 删除函数
-	err = utils.FuncDelete(functionID)
+	// 删除函数
+	err = service.DeleteFunc(functionID)
 
 	if err != nil {
 		errMsg := fmt.Sprintf("[Delete Function] Delete Function Error: %s", err.Error())
