@@ -84,7 +84,7 @@ func StopFuncHandler(ctx *gin.Context) {
 	}
 
 	// todo 停止函数
-	err = utils.FuncStop(functionID)
+	err = service.StopFunc(functionID)
 
 	if err != nil {
 		errMsg := fmt.Sprintf("[Stop Function] Stop Function Error: %s", err.Error())

@@ -87,11 +87,10 @@ func StartFunc(funcID int64) (err error) {
 	return
 }
 
-func StopFunc(userID int64, funcID int64, userName string) (err error) {
+func StopFunc(funcID int64) (err error) {
 
 	dbFuncInfo, err := model.Q.Function.Where(
 		model.Q.Function.FunctionID.Eq(funcID),
-		model.Q.Function.UserID.Eq(userID),
 	).First()
 
 	if err != nil {
@@ -107,8 +106,10 @@ func StopFunc(userID int64, funcID int64, userName string) (err error) {
 		return err
 	}
 
+	user, err := model.Q.UserUser.Where(model.Q.UserUser.ID.Eq(dbFuncInfo.UserID)).First()
+
 	funcInfo := model.FuncInfo{
-		UserName:  userName,
+		UserName:  user.Username,
 		FuncLabel: dbFuncInfo.FunctionLabel,
 		TrigType:  dbTrigInfo.TriggerType,
 	}
