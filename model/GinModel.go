@@ -12,20 +12,6 @@ type GetListResp struct {
 	Items interface{} `json:"items"`
 }
 
-type NodeItem struct {
-	Name     string `json:"node_name"`
-	Status   string `json:"status"`
-	Optional bool   `json:"optional"`
-	Age      string `json:"age"`
-	Version  string `json:"version"`
-	CpuUsage string `json:"cpu_usage"`
-	CpuTotal string `json:"cpu_total"`
-	MemUsage string `json:"memory_usage"`
-	MemTotal string `json:"memory_total"`
-	GpuUsage string `json:"gpu_usage"`
-	GpuTotal string `json:"gpu_total"`
-}
-
 type FuncList struct {
 	UserName     string      `json:"user_name"`
 	FunctionId   int         `json:"function_id"`

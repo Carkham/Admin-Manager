@@ -34,17 +34,17 @@ type PodMetricInfo struct {
 }
 
 type NodeInfo struct {
-	Name     string
-	Status   string
-	Optional bool
-	Age      string
-	Version  string
-	CpuTotal int
-	MemTotal int
-	GpuTotal int
-	CpuUse   int
-	MemUse   int
-	GpuUse   int
+	Name     string `json:"node_name"`
+	Status   string `json:"status"`
+	Optional bool   `json:"optional"`
+	Age      string `json:"age"`
+	Version  string `json:"version"`
+	CpuTotal int    `json:"cpu_total"`
+	MemTotal int    `json:"memory_total"`
+	GpuTotal int    `json:"gpu_total"`
+	CpuUse   int    `json:"cpu_usage"`
+	MemUse   int    `json:"memory_usage"`
+	GpuUse   int    `json:"gpu_usage"`
 }
 
 type FuncInfo struct {
