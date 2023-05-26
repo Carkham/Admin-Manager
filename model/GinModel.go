@@ -35,14 +35,6 @@ type FuncList struct {
 	ReplicasInfo interface{} `json:"replicas_info"`
 }
 
-type FuncInfo struct {
-	NodeName string `json:"node_name"`
-	CpuUsage int    `json:"cpu_usage"`
-	MemUsage int    `json:"memory_usage"`
-	GpuUsage int    `json:"gpu_usage"`
-	State    string `json:"state"`
-}
-
 type CreateTemplateReq struct {
 	TemplateLabel string `json:"template_label"`
 	ImageName     string `json:"image_name"`
