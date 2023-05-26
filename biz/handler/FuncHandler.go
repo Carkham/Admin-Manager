@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"admin/biz/service"
 	"admin/model"
 	"admin/utils"
 	"fmt"
@@ -54,8 +55,9 @@ func StartFuncHandler(ctx *gin.Context) {
 		return
 	}
 
-	// todo 启动镜像
-	err = utils.FuncStart(functionID)
+	// 启动镜像
+	err = service.StartFunc(functionID)
+
 	if err != nil {
 		errMsg := fmt.Sprintf("[Start Function] Start Function Error: %s", err.Error())
 		log.Print(errMsg)
