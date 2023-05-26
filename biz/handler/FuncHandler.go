@@ -12,28 +12,14 @@ import (
 )
 
 func GetFuncInfo(ctx *gin.Context) {
-	var allFunc []model.FuncList
-	// todo 获取单个用户的函数信息
-	var funcInfoList []model.FuncInfo
-	funcInfo := model.FuncInfo{
-		NodeName: "",
-		CpuUsage: 0,
-		MemUsage: 0,
-		GpuUsage: 0,
-		State:    "",
+	allFunc, err := service.GetFunctionList()
+	if err != nil {
+		errMsg := fmt.Sprintf("[Get FuncInfo] Get FuncInfo Error: %s", err.Error())
+		log.Print(errMsg)
+		jsonResp := utils.SetBadRequestResp(nil, errMsg)
+		ctx.JSON(http.StatusInternalServerError, jsonResp)
+		return
 	}
-	funcInfoList = append(funcInfoList, funcInfo)
-	// todo 获取全部函数信息
-	funcList := model.FuncList{
-		UserName:     "",
-		FunctionId:   0,
-		FunctionName: "",
-		TemplateName: "",
-		State:        "",
-		ReplicasInfo: funcInfoList,
-	}
-	allFunc = append(allFunc, funcList)
-
 	// 返回
 	respData := model.GetListResp{
 		Total: len(allFunc),

@@ -36,5 +36,5 @@ type DBFuncOverview struct {
 	FunctionID    int64  `gorm:"column:function_id;type:bigint;primaryKey;autoIncrement:true" json:"function_id"` // 函数主键
 	FunctionLabel string `gorm:"column:function_label;type:varchar(128);not null" json:"function_label"`          // 函数名称
 	TemplateLabel string `gorm:"column:template_label;type:varchar(128);not null" json:"template_label"`          // 模板标签
-	TriggerType   string `gorm:"column:trigger_type;type:varchar(64);not null" json:"trigger_type"`               // 触发器类型
+	Username      string `gorm:"column:username;type:varchar(16);not null" json:"username"`
 }

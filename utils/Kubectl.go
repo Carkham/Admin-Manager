@@ -385,8 +385,8 @@ func GetNodeList() (nodeMap map[string]*model.NodeInfo, err error) {
 }
 
 // GetMetricsList 获取内存GPU等资源监控信息
-func GetMetricsList(fid int64) (metricMap map[string]*model.PodMetricInfo, err error) {
-	metricMap = make(map[string]*model.PodMetricInfo)
+func GetMetricsList(fid int64) (FunReplicasList []model.FuncReplicasInfo, err error) {
+	metricMap := make(map[string]*model.PodMetricInfo)
 	var metricResp model.PodMetricResp
 	cli := KubeClient.RESTClient().Get()
 	resp, err := cli.RequestURI("/apis/metrics.k8s.io/v1beta1/namespace/default/pods").DoRaw(context.Background())
@@ -450,11 +450,20 @@ func GetMetricsList(fid int64) (metricMap map[string]*model.PodMetricInfo, err e
 		metricMap[name].MemUsage = mem
 	}
 
+	for _, pod := range metricMap {
+		FunReplicasList = append(FunReplicasList, model.FuncReplicasInfo{
+			NodeName: pod.NodeName,
+			CPUUsage: pod.CpuUsage,
+			MemUsage: pod.MemUsage,
+			GpuUsage: pod.GpuUsage,
+			State:    pod.State,
+		})
+	}
 	return
 }
 
 // GetDeploymentList 获取某一个用户的函数列表
-func GetDeploymentList(userID int64) (depMap map[string]model.DeploymentInfo, err error) {
+func GetDeploymentList() (depMap map[string]model.DeploymentInfo, err error) {
 	depMap = make(map[string]model.DeploymentInfo)
 	res, err := KubeClient.AppsV1().Deployments(coreV1.NamespaceDefault).List(context.Background(), metaV1.ListOptions{})
 

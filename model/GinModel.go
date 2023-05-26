@@ -12,7 +12,7 @@ type GetListResp struct {
 	Items interface{} `json:"items"`
 }
 
-type FuncList struct {
+type GetFuncList struct {
 	UserName     string      `json:"user_name"`
 	FunctionId   int         `json:"function_id"`
 	FunctionName string      `json:"function_name"`
@@ -48,4 +48,12 @@ type CreateUserReq struct {
 
 type CreateUserResp struct {
 	UserId int64 `json:"user_id"`
+}
+
+type FuncReplicasInfo struct {
+	NodeName string `json:"node_name"`
+	CPUUsage int    `json:"cpu_usage"`
+	MemUsage int    `json:"mem_usage"`
+	GpuUsage int    `json:"gpu_usage"`
+	State    string `json:"state"`
 }
