@@ -41,7 +41,6 @@ const (
 	SourceLocationKey = "INIT_SRC_LOC"
 	WorkDirKey        = "INIT_WORKDIR"
 	FuncIDLabelKey    = "funcID"
-	UserIDLabelKey    = "userID"
 	CodeFolder        = "usercode"
 	DataFolder        = "userdata"
 	CpuQuotaKey       = "cpu"

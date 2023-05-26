@@ -2,6 +2,7 @@ package handler
 
 import (
 	"admin/model"
+	Template "admin/model/model"
 	"admin/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -29,16 +30,28 @@ func CreateTemplate(ctx *gin.Context) {
 		return
 	}
 
-	// 镜像名称可以为空
+	// 工程模板文件名可以为空
 	if req.BaseCode == "" {
 		req.BaseCode = req.TemplateLabel + ".zip"
 	}
 
-	// todo 创建镜像
+	var newTemplate = Template.Template{
+		ImageName:     req.ImageName,
+		TemplateLabel: req.TemplateLabel,
+		FileName:      req.BaseCode,
+	}
+	err = model.Q.Template.Create(&newTemplate)
+	if err != nil {
+		errMsg := fmt.Sprintf("[Create Template] Create Template Error: %s", err.Error())
+		log.Print(errMsg)
+		jsonResp := utils.SetBadRequestResp(nil, errMsg)
+		ctx.JSON(http.StatusInternalServerError, jsonResp)
+		return
+	}
 
 	// 返回
 	respData := model.CreateTemplateResp{
-		TemplateId: 0,
+		TemplateId: int(newTemplate.TemplateID),
 	}
 	jsonResp := utils.SetOKResp(respData, nil)
 	ctx.JSON(http.StatusOK, jsonResp)

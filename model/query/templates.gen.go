@@ -29,6 +29,7 @@ func newTemplate(db *gorm.DB, opts ...gen.DOOption) template {
 	_template.TemplateID = field.NewInt64(tableName, "template_id")
 	_template.ImageName = field.NewString(tableName, "image_name")
 	_template.TemplateLabel = field.NewString(tableName, "template_label")
+	_template.FileName = field.NewString(tableName, "file_name")
 
 	_template.fillFieldMap()
 
@@ -42,6 +43,7 @@ type template struct {
 	TemplateID    field.Int64  // 主键id
 	ImageName     field.String // 模版对应镜像定位符号
 	TemplateLabel field.String // 模板标签
+	FileName      field.String // 工程模板文件名
 
 	fieldMap map[string]field.Expr
 }
@@ -61,6 +63,7 @@ func (t *template) updateTableName(table string) *template {
 	t.TemplateID = field.NewInt64(table, "template_id")
 	t.ImageName = field.NewString(table, "image_name")
 	t.TemplateLabel = field.NewString(table, "template_label")
+	t.FileName = field.NewString(table, "file_name")
 
 	t.fillFieldMap()
 
@@ -77,10 +80,11 @@ func (t *template) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (t *template) fillFieldMap() {
-	t.fieldMap = make(map[string]field.Expr, 3)
+	t.fieldMap = make(map[string]field.Expr, 4)
 	t.fieldMap["template_id"] = t.TemplateID
 	t.fieldMap["image_name"] = t.ImageName
 	t.fieldMap["template_label"] = t.TemplateLabel
+	t.fieldMap["file_name"] = t.FileName
 }
 
 func (t template) clone(db *gorm.DB) template {
