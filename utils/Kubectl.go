@@ -32,21 +32,6 @@ func KubeClientInit(projectPath string) {
 	KubeClient = clientset
 }
 
-func FuncStart(functionId int64) error {
-	// todo
-	panic("")
-}
-
-func FuncStop(functionId int64) error {
-	// todo
-	panic("")
-}
-
-func FuncDelete(functionId int64) error {
-	// todo
-	panic("")
-}
-
 var KubeClient *kubernetes.Clientset
 var basePath string
 

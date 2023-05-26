@@ -83,7 +83,7 @@ func StopFuncHandler(ctx *gin.Context) {
 		return
 	}
 
-	// todo 停止函数
+	// 停止函数
 	err = service.StopFunc(functionID)
 
 	if err != nil {
@@ -111,8 +111,8 @@ func DeleteFuncHandler(ctx *gin.Context) {
 		return
 	}
 
-	// todo 删除函数
-	err = utils.FuncDelete(functionID)
+	// 删除函数
+	err = service.DeleteFunc(functionID)
 
 	if err != nil {
 		errMsg := fmt.Sprintf("[Delete Function] Delete Function Error: %s", err.Error())

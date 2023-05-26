@@ -107,6 +107,10 @@ func StopFunc(funcID int64) (err error) {
 	}
 
 	user, err := model.Q.UserUser.Where(model.Q.UserUser.ID.Eq(dbFuncInfo.UserID)).First()
+	if err != nil {
+		log.Printf("[Delete Function] Get User Error: %s", err.Error())
+		return err
+	}
 
 	funcInfo := model.FuncInfo{
 		UserName:  user.Username,
