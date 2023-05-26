@@ -491,7 +491,7 @@ func GetDeploymentList() (depMap map[string]model.DeploymentInfo, err error) {
 			Name:      v.Name,
 			FuncIDStr: v.Labels[FuncIDLabelKey],
 			Replicas:  int(*v.Spec.JobTemplate.Spec.Parallelism),
-			Status:    fmt.Sprintf("%d/%d Active Now", v.Status.Active, v.Spec.JobTemplate.Spec.Completions),
+			Status:    fmt.Sprintf("%d/%d Active Now", len(v.Status.Active), v.Spec.JobTemplate.Spec.Completions),
 		}
 	}
 	return
