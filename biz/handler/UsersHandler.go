@@ -87,22 +87,24 @@ func CreateUser(ctx *gin.Context) {
 		return
 	}
 
-	// rsa加密密码解密
-	cipherText, err := utils.DecodeBase64(req.Password)
-	if err != nil {
-		errMsg := fmt.Sprintf("[Create User] Create User Error: %s", err.Error())
-		log.Print(errMsg)
-		jsonResp := utils.SetBadRequestResp(nil, errMsg)
-		ctx.JSON(http.StatusInternalServerError, jsonResp)
-		return
-	}
-	req.Password, err = utils.RSADecrypt(cipherText)
-	if err != nil {
-		errMsg := fmt.Sprintf("[Create User] Create User Error: %s", err.Error())
-		log.Print(errMsg)
-		jsonResp := utils.SetBadRequestResp(nil, errMsg)
-		ctx.JSON(http.StatusInternalServerError, jsonResp)
-		return
+	if req.NotEncrypt != true {
+		// rsa加密密码解密
+		cipherText, err := utils.DecodeBase64(req.Password)
+		if err != nil {
+			errMsg := fmt.Sprintf("[Create User] Create User Error: %s", err.Error())
+			log.Print(errMsg)
+			jsonResp := utils.SetBadRequestResp(nil, errMsg)
+			ctx.JSON(http.StatusInternalServerError, jsonResp)
+			return
+		}
+		req.Password, err = utils.RSADecrypt(cipherText)
+		if err != nil {
+			errMsg := fmt.Sprintf("[Create User] Create User Error: %s", err.Error())
+			log.Print(errMsg)
+			jsonResp := utils.SetBadRequestResp(nil, errMsg)
+			ctx.JSON(http.StatusInternalServerError, jsonResp)
+			return
+		}
 	}
 
 	// 密码存入数据库前加密
