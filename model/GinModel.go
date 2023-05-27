@@ -40,10 +40,11 @@ type UserInfo struct {
 }
 
 type CreateUserReq struct {
-	Username string `json:"user_name"`
-	Email    string `json:"email"`
-	IsAdmin  bool   `json:"is_admin"`
-	Password string `json:"password"`
+	Username   string `json:"user_name"`
+	Email      string `json:"email"`
+	IsAdmin    bool   `json:"is_admin"`
+	Password   string `json:"password"`
+	NotEncrypt bool   `json:"not_encrypt"` // only for unit test fuck !
 }
 
 type CreateUserResp struct {
