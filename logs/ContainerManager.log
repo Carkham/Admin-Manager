@@ -1,0 +1,87 @@
+2023/05/29 03:13:19.883881 /workspace/utils/Kubectl.go:329: [Node List] Node Metric Api Error: the server could not find the requested resource
+2023/05/29 03:13:19.884088 /workspace/utils/Kubectl.go:335: [Node List] Unmarshal Node Metric Api Resp Error: invalid character 'p' after top-level value
+2023/05/29 03:13:19.884108 /workspace/biz/handler/NodeInfoHandler.go:21: [Node Info] Get Node Info Error: invalid character 'p' after top-level value
+2023/05/29 03:13:19.896989 /workspace/utils/Kubectl.go:329: [Node List] Node Metric Api Error: the server could not find the requested resource
+2023/05/29 03:13:19.897217 /workspace/utils/Kubectl.go:335: [Node List] Unmarshal Node Metric Api Resp Error: invalid character 'p' after top-level value
+2023/05/29 03:13:19.897373 /workspace/biz/handler/NodeInfoHandler.go:21: [Node Info] Get Node Info Error: invalid character 'p' after top-level value
+2023/05/29 03:13:20.392030 /workspace/biz/handler/UsersHandler.go:21: [Get UsersInfo] Get UsersInfo Error: sql: Scan error on column index 1, name "last_login": unsupported Scan, storing driver.Value type []uint8 into type *time.Time
+2023/05/29 03:13:20.396458 /workspace/biz/handler/UsersHandler.go:21: [Get UsersInfo] Get UsersInfo Error: sql: Scan error on column index 1, name "last_login": unsupported Scan, storing driver.Value type []uint8 into type *time.Time
+2023/05/29 03:16:11.918903 /workspace/biz/handler/UsersHandler.go:21: [Get UsersInfo] Get UsersInfo Error: sql: Scan error on column index 1, name "last_login": unsupported Scan, storing driver.Value type []uint8 into type *time.Time
+2023/05/29 03:16:11.927904 /workspace/biz/handler/UsersHandler.go:21: [Get UsersInfo] Get UsersInfo Error: sql: Scan error on column index 1, name "last_login": unsupported Scan, storing driver.Value type []uint8 into type *time.Time
+2023/05/29 03:16:16.644017 /workspace/utils/Kubectl.go:329: [Node List] Node Metric Api Error: the server could not find the requested resource
+2023/05/29 03:16:16.644099 /workspace/utils/Kubectl.go:335: [Node List] Unmarshal Node Metric Api Resp Error: invalid character 'p' after top-level value
+2023/05/29 03:16:16.669093 /workspace/biz/handler/NodeInfoHandler.go:21: [Node Info] Get Node Info Error: invalid character 'p' after top-level value
+2023/05/29 03:16:16.679428 /workspace/utils/Kubectl.go:329: [Node List] Node Metric Api Error: the server could not find the requested resource
+2023/05/29 03:16:16.679504 /workspace/utils/Kubectl.go:335: [Node List] Unmarshal Node Metric Api Resp Error: invalid character 'p' after top-level value
+2023/05/29 03:16:17.022715 /workspace/biz/handler/NodeInfoHandler.go:21: [Node Info] Get Node Info Error: invalid character 'p' after top-level value
+2023/05/29 03:17:32.454553 /workspace/utils/Kubectl.go:329: [Node List] Node Metric Api Error: the server could not find the requested resource
+2023/05/29 03:17:32.455193 /workspace/utils/Kubectl.go:335: [Node List] Unmarshal Node Metric Api Resp Error: invalid character 'p' after top-level value
+2023/05/29 03:17:32.502341 /workspace/biz/handler/NodeInfoHandler.go:21: [Node Info] Get Node Info Error: invalid character 'p' after top-level value
+2023/05/29 03:17:32.515969 /workspace/utils/Kubectl.go:329: [Node List] Node Metric Api Error: the server could not find the requested resource
+2023/05/29 03:17:32.516249 /workspace/utils/Kubectl.go:335: [Node List] Unmarshal Node Metric Api Resp Error: invalid character 'p' after top-level value
+2023/05/29 03:17:32.836384 /workspace/biz/handler/NodeInfoHandler.go:21: [Node Info] Get Node Info Error: invalid character 'p' after top-level value
+2023/05/29 03:19:01.160662 /workspace/utils/Kubectl.go:329: [Node List] Node Metric Api Error: the server could not find the requested resource
+2023/05/29 03:19:01.161157 /workspace/utils/Kubectl.go:335: [Node List] Unmarshal Node Metric Api Resp Error: invalid character 'p' after top-level value
+2023/05/29 03:19:01.194156 /workspace/biz/handler/NodeInfoHandler.go:21: [Node Info] Get Node Info Error: invalid character 'p' after top-level value
+2023/05/29 03:19:01.206630 /workspace/utils/Kubectl.go:329: [Node List] Node Metric Api Error: the server could not find the requested resource
+2023/05/29 03:19:01.206730 /workspace/utils/Kubectl.go:335: [Node List] Unmarshal Node Metric Api Resp Error: invalid character 'p' after top-level value
+2023/05/29 03:19:01.541127 /workspace/biz/handler/NodeInfoHandler.go:21: [Node Info] Get Node Info Error: invalid character 'p' after top-level value
+2023/05/29 03:21:24.168709 /workspace/utils/Kubectl.go:329: [Node List] Node Metric Api Error: the server could not find the requested resource
+2023/05/29 03:21:24.169133 /workspace/utils/Kubectl.go:335: [Node List] Unmarshal Node Metric Api Resp Error: invalid character 'p' after top-level value
+2023/05/29 03:21:24.193699 /workspace/biz/handler/NodeInfoHandler.go:21: [Node Info] Get Node Info Error: invalid character 'p' after top-level value
+2023/05/29 03:21:24.210512 /workspace/utils/Kubectl.go:329: [Node List] Node Metric Api Error: the server could not find the requested resource
+2023/05/29 03:21:24.210589 /workspace/utils/Kubectl.go:335: [Node List] Unmarshal Node Metric Api Resp Error: invalid character 'p' after top-level value
+2023/05/29 03:21:24.555856 /workspace/biz/handler/NodeInfoHandler.go:21: [Node Info] Get Node Info Error: invalid character 'p' after top-level value
+2023/05/29 03:27:48.746735 /workspace/biz/handler/UsersHandler.go:21: [Get UsersInfo] Get UsersInfo Error: sql: Scan error on column index 1, name "last_login": unsupported Scan, storing driver.Value type []uint8 into type *time.Time
+2023/05/29 03:27:48.760544 /workspace/biz/handler/UsersHandler.go:21: [Get UsersInfo] Get UsersInfo Error: sql: Scan error on column index 1, name "last_login": unsupported Scan, storing driver.Value type []uint8 into type *time.Time
+2023/05/29 03:28:05.426661 /workspace/utils/Kubectl.go:393: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 03:28:05.448777 /workspace/utils/Kubectl.go:393: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 04:04:24.480279 /workspace/utils/Kubectl.go:393: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 04:04:24.500295 /workspace/utils/Kubectl.go:393: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 04:04:31.086742 /workspace/biz/handler/UsersHandler.go:21: [Get UsersInfo] Get UsersInfo Error: sql: Scan error on column index 1, name "last_login": unsupported Scan, storing driver.Value type []uint8 into type *time.Time
+2023/05/29 04:04:31.091006 /workspace/biz/handler/UsersHandler.go:21: [Get UsersInfo] Get UsersInfo Error: sql: Scan error on column index 1, name "last_login": unsupported Scan, storing driver.Value type []uint8 into type *time.Time
+2023/05/29 04:05:14.738958 /workspace/utils/Kubectl.go:393: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 04:05:14.757655 /workspace/utils/Kubectl.go:393: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 04:06:55.059868 /workspace/utils/Kubectl.go:393: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 04:06:55.074323 /workspace/utils/Kubectl.go:393: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 04:08:12.458433 /workspace/biz/handler/UsersHandler.go:21: [Get UsersInfo] Get UsersInfo Error: sql: Scan error on column index 1, name "last_login": unsupported Scan, storing driver.Value type []uint8 into type *time.Time
+2023/05/29 04:08:12.463262 /workspace/biz/handler/UsersHandler.go:21: [Get UsersInfo] Get UsersInfo Error: sql: Scan error on column index 1, name "last_login": unsupported Scan, storing driver.Value type []uint8 into type *time.Time
+2023/05/29 04:15:30.332311 /workspace/utils/Kubectl.go:393: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 04:15:30.350278 /workspace/utils/Kubectl.go:393: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 04:16:16.042887 /workspace/utils/Kubectl.go:393: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 04:16:16.057884 /workspace/utils/Kubectl.go:393: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 04:29:21.018987 /workspace/main.go:23: [Error]: Service Start Fail: listen tcp 0.0.0.0:8080: bind: address already in use
+2023/05/29 04:30:04.531234 /workspace/main.go:23: [Error]: Service Start Fail: listen tcp 0.0.0.0:8080: bind: address already in use
+2023/05/29 04:35:30.420297 /workspace/utils/Kubectl.go:393: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 04:35:30.439678 /workspace/utils/Kubectl.go:393: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 04:38:21.320440 /workspace/utils/Kubectl.go:393: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 04:38:21.341246 /workspace/utils/Kubectl.go:393: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 04:43:09.327515 /workspace/utils/Kubectl.go:393: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 04:43:09.371409 /workspace/utils/Kubectl.go:393: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 05:03:56.846750 /workspace/utils/Kubectl.go:395: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 05:03:56.864545 /workspace/utils/Kubectl.go:395: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/29 05:08:56.035860 /workspace/utils/Kubectl.go:209: [Create CronJob] Create CronJob Error: cronjobs.batch "realssd-nsdd" not found
+2023/05/29 11:02:39.482160 /workspace/biz/middleware/Authentication.go:35: [Authentication] Authenticate Error: redis: nil
+2023/05/29 11:02:39.486826 /workspace/biz/middleware/Authentication.go:35: [Authentication] Authenticate Error: redis: nil
+2023/05/29 11:17:10.464919 /workspace/biz/middleware/Authentication.go:35: [Authentication] Authenticate Error: redis: nil
+2023/05/29 11:17:10.468119 /workspace/biz/middleware/Authentication.go:35: [Authentication] Authenticate Error: redis: nil
+2023/05/29 11:30:58.296714 /workspace/biz/middleware/Authentication.go:35: [Authentication] Authenticate Error: redis: nil
+2023/05/29 11:30:58.301058 /workspace/biz/middleware/Authentication.go:35: [Authentication] Authenticate Error: redis: nil
+2023/05/29 11:30:59.405437 /workspace/biz/middleware/Authentication.go:35: [Authentication] Authenticate Error: redis: nil
+2023/05/29 11:30:59.407520 /workspace/biz/middleware/Authentication.go:35: [Authentication] Authenticate Error: redis: nil
+2023/05/29 11:33:10.904446 /workspace/biz/middleware/Authentication.go:35: [Authentication] Authenticate Error: redis: nil
+2023/05/29 11:33:10.906444 /workspace/biz/middleware/Authentication.go:35: [Authentication] Authenticate Error: redis: nil
+2023/05/29 11:33:59.093572 /workspace/biz/middleware/Authentication.go:35: [Authentication] Authenticate Error: redis: nil
+2023/05/29 11:33:59.101927 /workspace/biz/middleware/Authentication.go:35: [Authentication] Authenticate Error: redis: nil
+2023/05/29 11:35:36.895452 /workspace/biz/middleware/Authentication.go:35: [Authentication] Authenticate Error: redis: nil
+2023/05/29 11:35:36.903185 /workspace/biz/middleware/Authentication.go:35: [Authentication] Authenticate Error: redis: nil
+2023/05/29 16:18:04.471428 /workspace/biz/middleware/Authentication.go:35: [Authentication] Authenticate Error: redis: nil
+2023/05/29 16:18:04.478337 /workspace/biz/middleware/Authentication.go:35: [Authentication] Authenticate Error: redis: nil
+2023/05/29 16:18:15.984220 /workspace/biz/middleware/Authentication.go:35: [Authentication] Authenticate Error: redis: nil
+2023/05/31 17:41:43.112040 /workspace/biz/handler/UsersHandler.go:62: [Create User] Parse Parameter Error: need username or password
+2023/05/31 17:46:01.060155 /workspace/utils/Kubectl.go:395: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/31 17:46:01.079943 /workspace/utils/Kubectl.go:395: [Pod Metrics] Metric Api Error: the server could not find the requested resource
+2023/05/31 17:46:04.685750 /workspace/utils/Kubectl.go:233: [Create CronJob] Create CronJob Error: CronJob.batch "realssd-wcnd" is invalid: [spec.timeZone: Invalid value: "SH": unknown time zone SH, spec.jobTemplate.spec.template.spec.restartPolicy: Required value: valid values: "OnFailure", "Never"]
+2023/05/31 17:46:04.686018 /workspace/biz/service/FunctionOperationService.go:84: [Start Function] Start Deployment Error: CronJob.batch "realssd-wcnd" is invalid: [spec.timeZone: Invalid value: "SH": unknown time zone SH, spec.jobTemplate.spec.template.spec.restartPolicy: Required value: valid values: "OnFailure", "Never"]
+2023/05/31 17:46:04.686288 /workspace/biz/service/FunctionOperationService.go:86: [Start Function] Function 4 Successfully Start as 
+2023/05/31 17:46:04.686469 /workspace/biz/handler/FuncHandler.go:49: [Start Function] Start Function Error: CronJob.batch "realssd-wcnd" is invalid: [spec.timeZone: Invalid value: "SH": unknown time zone SH, spec.jobTemplate.spec.template.spec.restartPolicy: Required value: valid values: "OnFailure", "Never"]

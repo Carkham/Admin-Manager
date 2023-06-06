@@ -10,7 +10,7 @@ import (
 
 func GetFunctionList() (list []model.GetFuncList, err error) {
 	var funcList []model.DBFuncOverview
-	var funcMap map[int64]*model.GetFuncList
+	var funcMap = map[int64]*model.GetFuncList{}
 	err = model.Q.Function.
 		LeftJoin(model.Q.Template, model.Q.Function.TemplateID.EqCol(model.Q.Template.TemplateID)).
 		LeftJoin(model.Q.UserUser, model.Q.Function.UserID.EqCol(model.Q.UserUser.ID)).
@@ -30,6 +30,7 @@ func GetFunctionList() (list []model.GetFuncList, err error) {
 			FunctionName: v.FunctionLabel,
 			TemplateName: v.TemplateLabel,
 			ReplicasInfo: replicasList,
+			State: "Stop",
 		}
 	}
 
