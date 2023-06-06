@@ -330,10 +330,9 @@ func GetNodeList() (nodeMap map[string]*model.NodeInfo, err error) {
 	}
 
 	err = json.Unmarshal(resp, &metricResp)
-
+	fmt.Println(string(resp))
 	if err != nil {
 		log.Printf("[Node List] Unmarshal Node Metric Api Resp Error: %s", err.Error())
-		return
 	}
 
 	for _, v := range nodes.Items {
@@ -371,7 +370,7 @@ func GetNodeList() (nodeMap map[string]*model.NodeInfo, err error) {
 			Status:   status,
 			Optional: !v.Spec.Unschedulable,
 			Age:      fmt.Sprintf("%d hour", (time.Now().Unix()-v.CreationTimestamp.Unix())/3600),
-			Version:  v.APIVersion,
+			Version:  v.Status.NodeInfo.KubeletVersion,
 			CpuTotal: int(v.Status.Allocatable.Cpu().MilliValue()),
 			MemTotal: int(v.Status.Allocatable.Memory().Value() / (1 << 20)),
 			GpuTotal: int(v.Status.Allocatable.Name(GpuQuotaKey, resource.DecimalSI).Value()),
@@ -379,7 +378,9 @@ func GetNodeList() (nodeMap map[string]*model.NodeInfo, err error) {
 			MemUse:   nodeMemUse,
 			GpuUse:   nodeGpuUse,
 		}
+		fmt.Println(*nodeMap[v.Name])
 	}
+	
 	return
 }
 
@@ -398,7 +399,6 @@ func GetMetricsList(fid int64) (FunReplicasList []model.FuncReplicasInfo, err er
 
 	if err != nil {
 		log.Printf("[Pod Metrics] Unmarshal Api Resp Error: %s", err.Error())
-		return
 	}
 
 	podList, err := KubeClient.CoreV1().Pods(coreV1.NamespaceDefault).List(
@@ -412,7 +412,6 @@ func GetMetricsList(fid int64) (FunReplicasList []model.FuncReplicasInfo, err er
 		log.Printf("[Pod List] Get Pod List Error: %s", err.Error())
 		return
 	}
-
 	for _, pod := range podList.Items {
 		var gpuUsage int
 		for _, c := range pod.Spec.Containers {

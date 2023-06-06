@@ -14,7 +14,7 @@ import (
 var Q *query.Query
 
 func DBInit() {
-	url := fmt.Sprintf("%s:%s@(%s:%d)/%s",
+	url := fmt.Sprintf("%s:%s@(%s:%d)/%s?parseTime=true",
 		conf.Config.MySQL.Username,
 		conf.Config.MySQL.Password,
 		conf.Config.MySQL.Address,
