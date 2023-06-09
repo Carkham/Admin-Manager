@@ -9,8 +9,10 @@ import (
 	appV1 "k8s.io/api/apps/v1"
 	batchV1 "k8s.io/api/batch/v1"
 	coreV1 "k8s.io/api/core/v1"
+	networkV1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"log"
@@ -18,6 +20,27 @@ import (
 	"strconv"
 	"time"
 )
+
+var KubeClient *kubernetes.Clientset
+var basePath string
+
+const (
+	MountRootKey      = "INIT_MOUNT_ROOT"
+	SourceTypeKey     = "INIT_FETCH_TYPE"
+	SourceLocationKey = "INIT_SRC_LOC"
+	WorkDirKey        = "INIT_WORKDIR"
+	FuncIDLabelKey    = "funcID"
+	UserIDLabelKey    = "userID"
+	CodeFolder        = "code"
+	DataFolder        = "data"
+	CpuQuotaKey       = "cpu"
+	MemQuotaKey       = "memory"
+	GpuQuotaKey       = "nvidia.com/gpu"
+	DeployNameKey     = "app"
+	PrefixPathTypeStr = "Prefix"
+)
+
+var PrefixType = networkV1.PathType(PrefixPathTypeStr)
 
 func KubeClientInit(projectPath string) {
 	basePath = conf.Config.FileSystem.RootPath
@@ -31,23 +54,6 @@ func KubeClientInit(projectPath string) {
 	}
 	KubeClient = clientset
 }
-
-var KubeClient *kubernetes.Clientset
-var basePath string
-
-const (
-	MountRootKey      = "INIT_MOUNT_ROOT"
-	SourceTypeKey     = "INIT_FETCH_TYPE"
-	SourceLocationKey = "INIT_SRC_LOC"
-	WorkDirKey        = "INIT_WORKDIR"
-	FuncIDLabelKey    = "funcID"
-	CodeFolder        = "usercode"
-	DataFolder        = "userdata"
-	CpuQuotaKey       = "cpu"
-	MemQuotaKey       = "memory"
-	GpuQuotaKey       = "nvidia.com/gpu"
-	DeployNameKey     = "app"
-)
 
 func PrepareInitContainer(funcInfo *model.FuncInfo) []coreV1.Container {
 	return []coreV1.Container{
@@ -86,16 +92,124 @@ func PrepareInitContainer(funcInfo *model.FuncInfo) []coreV1.Container {
 	}
 }
 
+func CreateServiceAndIngress(funcInfo *model.FuncInfo) error {
+	depLabel := fmt.Sprintf("%s-%s", funcInfo.UserName, funcInfo.FuncLabel)
+	fidStr := strconv.FormatInt(funcInfo.FunctionID, 10)
+	uidStr := strconv.FormatInt(funcInfo.UserID, 10)
+	selectLabels := map[string]string{
+		"app":    depLabel,
+		"userID": uidStr,
+		"funcID": fidStr,
+	}
+	svc := coreV1.Service{
+		TypeMeta: metaV1.TypeMeta{
+			Kind:       "Service",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metaV1.ObjectMeta{
+			Name:   fmt.Sprintf("%s-%s", funcInfo.UserName, funcInfo.FuncLabel),
+			Labels: selectLabels,
+		},
+		Spec: coreV1.ServiceSpec{
+			Selector: map[string]string{
+				"app": fmt.Sprintf("%s-%s", funcInfo.UserName, funcInfo.FuncLabel),
+			},
+			Ports: []coreV1.ServicePort{
+				{
+					Name:       "tcp",
+					Port:       8080,
+					TargetPort: intstr.FromInt(8080),
+					Protocol:   "TCP",
+				},
+			},
+		},
+	}
+	_, err := KubeClient.CoreV1().Services(coreV1.NamespaceDefault).Create(
+		context.Background(),
+		&svc,
+		metaV1.CreateOptions{},
+	)
+
+	if err != nil {
+		return err
+	}
+
+	ing := networkV1.Ingress{
+		TypeMeta: metaV1.TypeMeta{
+			Kind:       "Ingress",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metaV1.ObjectMeta{
+			Name:   fmt.Sprintf("%s-%s", funcInfo.UserName, funcInfo.FuncLabel),
+			Labels: map[string]string{},
+			Annotations: map[string]string{
+				"kubernetes.io/ingress.class": "nginx",
+			},
+		},
+		Spec: networkV1.IngressSpec{
+			Rules: []networkV1.IngressRule{
+				{
+					"", networkV1.IngressRuleValue{
+						HTTP: &networkV1.HTTPIngressRuleValue{
+							Paths: []networkV1.HTTPIngressPath{
+								{
+									PathType: &PrefixType,
+									Path:     fmt.Sprintf("/call/%s/%s", funcInfo.UserName, funcInfo.FuncLabel),
+									Backend: networkV1.IngressBackend{
+										Service: &networkV1.IngressServiceBackend{
+											Name: fmt.Sprintf("%s-%s", funcInfo.UserName, funcInfo.FuncLabel),
+											Port: networkV1.ServiceBackendPort{
+												Number: int32(8080),
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	_, err = KubeClient.NetworkingV1().Ingresses(coreV1.NamespaceDefault).Create(
+		context.Background(),
+		&ing,
+		metaV1.CreateOptions{},
+	)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteServiceAndIngress(name string) error {
+
+	KubeClient.NetworkingV1().Ingresses(coreV1.NamespaceDefault).Delete(
+		context.Background(),
+		name,
+		metaV1.DeleteOptions{},
+	)
+
+	KubeClient.CoreV1().Services(coreV1.NamespaceDefault).Delete(
+		context.Background(),
+		name,
+		metaV1.DeleteOptions{},
+	)
+	return nil
+}
+
 func PrepareMainContainer(funcInfo *model.FuncInfo) []coreV1.Container {
-	cpuLimit, _ := resource.ParseQuantity(fmt.Sprintf("%dm", funcInfo.CPUQuotaM[0]))
-	memLimit, _ := resource.ParseQuantity(fmt.Sprintf("%dMi", funcInfo.MemQuotaMi[0]))
+	cpuLimit, _ := resource.ParseQuantity(fmt.Sprintf("%dm", funcInfo.CPUQuotaM[1]))
+	memLimit, _ := resource.ParseQuantity(fmt.Sprintf("%dMi", funcInfo.MemQuotaMi[1]))
 	limit := coreV1.ResourceList{
 		CpuQuotaKey: cpuLimit,
 		MemQuotaKey: memLimit,
 	}
 
-	cpuRequest, _ := resource.ParseQuantity(fmt.Sprintf("%dm", funcInfo.CPUQuotaM[1]))
-	memRequest, _ := resource.ParseQuantity(fmt.Sprintf("%dMi", funcInfo.MemQuotaMi[1]))
+	cpuRequest, _ := resource.ParseQuantity(fmt.Sprintf("%dm", funcInfo.CPUQuotaM[0]))
+	memRequest, _ := resource.ParseQuantity(fmt.Sprintf("%dMi", funcInfo.MemQuotaMi[0]))
 	request := coreV1.ResourceList{
 		CpuQuotaKey: cpuRequest,
 		MemQuotaKey: memRequest,
@@ -140,6 +254,7 @@ func PreparePodTemplateSpec(funcInfo *model.FuncInfo, labels map[string]string) 
 			InitContainers: PrepareInitContainer(funcInfo),
 			Containers:     PrepareMainContainer(funcInfo),
 			ResourceClaims: []coreV1.PodResourceClaim{},
+			RestartPolicy:  "Always",
 			Volumes: []coreV1.Volume{
 				{
 					"workspace",
@@ -184,7 +299,8 @@ func PrepareCreateDeployment(funcInfo *model.FuncInfo) *appV1.Deployment {
 
 	ans := appV1.Deployment{
 		ObjectMeta: metaV1.ObjectMeta{
-			Name: depLabel,
+			Name:   depLabel,
+			Labels: selectLabels,
 		},
 		Spec: appV1.DeploymentSpec{
 			Replicas: &funcInfo.PodCount,
@@ -198,7 +314,6 @@ func PrepareCreateDeployment(funcInfo *model.FuncInfo) *appV1.Deployment {
 }
 
 // StopDeployment 函数必需UserName、FuncLabel、TrigType三个参数
-// 关闭函数
 func StopDeployment(funcInfo *model.FuncInfo) error {
 	depName := fmt.Sprintf("%s-%s", funcInfo.UserName, funcInfo.FuncLabel)
 	switch funcInfo.TrigType {
@@ -216,12 +331,15 @@ func StopDeployment(funcInfo *model.FuncInfo) error {
 			log.Printf("[Create Deployment] Create Deployment Error: %s", err.Error())
 			return err
 		}
+		err = DeleteServiceAndIngress(depName)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
-// StartDeployment 启动函数
 func StartDeployment(funcInfo *model.FuncInfo) (depName string, err error) {
 
 	switch funcInfo.TrigType {
@@ -242,7 +360,11 @@ func StartDeployment(funcInfo *model.FuncInfo) (depName string, err error) {
 			log.Printf("[Create Deployment] Create Deployment Error: %s", err.Error())
 			return "", err
 		}
+		err = CreateServiceAndIngress(funcInfo)
 		depName = result.Name
+		if err != nil {
+			return depName, err
+		}
 	}
 
 	return
@@ -259,7 +381,8 @@ func PrepareCronJob(funcInfo *model.FuncInfo) *batchV1.CronJob {
 	}
 	ans := batchV1.CronJob{
 		ObjectMeta: metaV1.ObjectMeta{
-			Name: depLabel,
+			Name:   depLabel,
+			Labels: selectLabels,
 		},
 		Spec: batchV1.CronJobSpec{
 			Schedule: funcInfo.TimeStr,
@@ -279,7 +402,6 @@ func PrepareCronJob(funcInfo *model.FuncInfo) *batchV1.CronJob {
 	return &ans
 }
 
-// GetPodInfoList 获取运行该函数的容器列表
 func GetPodInfoList(funcID int64) (list map[string][]model.PodInfo, err error) {
 	list = make(map[string][]model.PodInfo)
 	podList, err := KubeClient.CoreV1().Pods(coreV1.NamespaceDefault).List(
@@ -312,7 +434,6 @@ func GetPodInfoList(funcID int64) (list map[string][]model.PodInfo, err error) {
 	return
 }
 
-// GetNodeList 获取节点信息
 func GetNodeList() (nodeMap map[string]*model.NodeInfo, err error) {
 	nodeMap = make(map[string]*model.NodeInfo)
 	var metricResp model.NodeMetricResp
@@ -330,9 +451,10 @@ func GetNodeList() (nodeMap map[string]*model.NodeInfo, err error) {
 	}
 
 	err = json.Unmarshal(resp, &metricResp)
-	fmt.Println(string(resp))
+
 	if err != nil {
 		log.Printf("[Node List] Unmarshal Node Metric Api Resp Error: %s", err.Error())
+		return
 	}
 
 	for _, v := range nodes.Items {
@@ -341,27 +463,6 @@ func GetNodeList() (nodeMap map[string]*model.NodeInfo, err error) {
 		for _, c := range v.Status.Conditions {
 			if c.Status == "True" {
 				status = string(c.Type)
-			}
-		}
-
-		nodeCpuUse, nodeMemUse, nodeGpuUse := 0, 0, 0
-
-		podList, err := KubeClient.CoreV1().Pods(coreV1.NamespaceDefault).List(
-			context.Background(),
-			metaV1.ListOptions{
-				LabelSelector: fmt.Sprintf("node=%s", v.Name),
-			},
-		)
-
-		if err != nil {
-			log.Printf("[Pod List] Get Pod List Error: %s", err.Error())
-		} else {
-			for _, pod := range podList.Items {
-				for _, c := range pod.Spec.Containers {
-					nodeCpuUse += int(c.Resources.Requests.Cpu().MilliValue())
-					nodeMemUse += int(c.Resources.Requests.Memory().Value() / (1 << 20))
-					nodeGpuUse += int(c.Resources.Requests.Name(GpuQuotaKey, resource.DecimalSI).Value())
-				}
 			}
 		}
 
@@ -374,22 +475,38 @@ func GetNodeList() (nodeMap map[string]*model.NodeInfo, err error) {
 			CpuTotal: int(v.Status.Allocatable.Cpu().MilliValue()),
 			MemTotal: int(v.Status.Allocatable.Memory().Value() / (1 << 20)),
 			GpuTotal: int(v.Status.Allocatable.Name(GpuQuotaKey, resource.DecimalSI).Value()),
-			CpuUse:   nodeCpuUse,
-			MemUse:   nodeMemUse,
-			GpuUse:   nodeGpuUse,
+			CpuUse:   0,
+			MemUse:   0,
+			GpuUse:   0,
 		}
-		fmt.Println(*nodeMap[v.Name])
 	}
-	
+
+	podList, err := KubeClient.CoreV1().Pods(coreV1.NamespaceDefault).List(
+		context.Background(),
+		metaV1.ListOptions{},
+	)
+
+	if err != nil {
+		log.Printf("[Pod List] Get Pod List Error: %s", err.Error())
+	} else {
+		for _, pod := range podList.Items {
+			for _, c := range pod.Spec.Containers {
+				nodeMap[pod.Spec.NodeName].CpuUse += int(c.Resources.Requests.Cpu().MilliValue())
+				nodeMap[pod.Spec.NodeName].MemUse += int(c.Resources.Requests.Memory().Value() / (1 << 20))
+				nodeMap[pod.Spec.NodeName].GpuUse += int(c.Resources.Requests.Name(GpuQuotaKey, resource.DecimalSI).Value())
+				nodeMap[pod.Spec.NodeName].PodNum++
+			}
+		}
+	}
+
 	return
 }
 
-// GetMetricsList 获取内存GPU等资源监控信息
-func GetMetricsList(fid int64) (FunReplicasList []model.FuncReplicasInfo, err error) {
-	metricMap := make(map[string]*model.PodMetricInfo)
-	var metricResp model.PodMetricResp
+func GetMetricsList(fid int64) (metricMap map[string]*model.PodMetricInfo, err error) {
+	metricMap = make(map[string]*model.PodMetricInfo)
+	var metricResp = model.PodMetricResp{}
 	cli := KubeClient.RESTClient().Get()
-	resp, err := cli.RequestURI("/apis/metrics.k8s.io/v1beta1/namespace/default/pods").DoRaw(context.Background())
+	resp, err := cli.RequestURI("/apis/metrics.k8s.io/v1beta1/namespaces/default/pods").DoRaw(context.Background())
 
 	if err != nil {
 		log.Printf("[Pod Metrics] Metric Api Error: %s", err.Error())
@@ -412,6 +529,7 @@ func GetMetricsList(fid int64) (FunReplicasList []model.FuncReplicasInfo, err er
 		log.Printf("[Pod List] Get Pod List Error: %s", err.Error())
 		return
 	}
+
 	for _, pod := range podList.Items {
 		var gpuUsage int
 		for _, c := range pod.Spec.Containers {
@@ -426,12 +544,16 @@ func GetMetricsList(fid int64) (FunReplicasList []model.FuncReplicasInfo, err er
 			GpuUsage:   gpuUsage,
 			FunctionID: fid,
 			DeployName: pod.Labels[DeployNameKey],
-			State:      pod.Status.String(),
+			State:      fmt.Sprintf("%s:%s", string(pod.Status.Phase), pod.Status.Reason),
 		}
+
 	}
 
 	for _, pod := range metricResp.Items {
 		name := pod.Metadata.Name
+		if _, ok := metricMap[name]; !ok {
+			continue
+		}
 		cpu := 0
 		mem := 0
 		for _, c := range pod.Containers {
@@ -439,7 +561,7 @@ func GetMetricsList(fid int64) (FunReplicasList []model.FuncReplicasInfo, err er
 			if err == nil {
 				cpu += int(cpuQuantity.MilliValue())
 			}
-			memQuantity, err := resource.ParseQuantity(c.Usage.CPU)
+			memQuantity, err := resource.ParseQuantity(c.Usage.Memory)
 			if err == nil {
 				mem += int(memQuantity.Value() / 1024)
 			}
@@ -448,19 +570,9 @@ func GetMetricsList(fid int64) (FunReplicasList []model.FuncReplicasInfo, err er
 		metricMap[name].MemUsage = mem
 	}
 
-	for _, pod := range metricMap {
-		FunReplicasList = append(FunReplicasList, model.FuncReplicasInfo{
-			NodeName: pod.NodeName,
-			CPUUsage: pod.CpuUsage,
-			MemUsage: pod.MemUsage,
-			GpuUsage: pod.GpuUsage,
-			State:    pod.State,
-		})
-	}
 	return
 }
 
-// GetDeploymentList 获取某一个用户的函数列表
 func GetDeploymentList() (depMap map[string]model.DeploymentInfo, err error) {
 	depMap = make(map[string]model.DeploymentInfo)
 	res, err := KubeClient.AppsV1().Deployments(coreV1.NamespaceDefault).List(context.Background(), metaV1.ListOptions{})
