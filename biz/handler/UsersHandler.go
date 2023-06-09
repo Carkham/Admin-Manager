@@ -11,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 func GetUsersInfo(ctx *gin.Context) {
@@ -26,13 +27,17 @@ func GetUsersInfo(ctx *gin.Context) {
 
 	var userInfoList []model.UserInfo
 	for _, userUser := range userUserList {
-		userInfoList = append(userInfoList, model.UserInfo{
+		newItem := model.UserInfo{
 			UserId:    int(userUser.ID),
 			UserName:  userUser.Username,
-			LastLogin: userUser.LastLogin.Format("2006-01-02 15:04"),
+			LastLogin: "NONE",
 			IsAdmin:   userUser.IsStaff,
 			Email:     userUser.Email,
-		})
+		}
+		if userUser.LastLogin != nil {
+			newItem.LastLogin = userUser.LastLogin.Format("2006-01-02 15:04")
+		}
+		userInfoList = append(userInfoList, newItem)
 	}
 
 	// 返回
@@ -127,10 +132,11 @@ func CreateUser(ctx *gin.Context) {
 
 	// 保存
 	var newUser = UserUser.UserUser{
-		Username: req.Username,
-		Email:    req.Email,
-		Password: hash,
-		IsStaff:  req.IsAdmin,
+		Username:   req.Username,
+		Email:      req.Email,
+		Password:   hash,
+		IsStaff:    req.IsAdmin,
+		DateJoined: time.Now(),
 	}
 	err = model.Q.UserUser.Create(&newUser)
 	if err != nil {
