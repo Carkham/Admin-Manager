@@ -30,7 +30,6 @@ const (
 	SourceLocationKey = "INIT_SRC_LOC"
 	WorkDirKey        = "INIT_WORKDIR"
 	FuncIDLabelKey    = "funcID"
-	UserIDLabelKey    = "userID"
 	CodeFolder        = "code"
 	DataFolder        = "data"
 	CpuQuotaKey       = "cpu"
@@ -186,13 +185,13 @@ func CreateServiceAndIngress(funcInfo *model.FuncInfo) error {
 
 func DeleteServiceAndIngress(name string) error {
 
-	KubeClient.NetworkingV1().Ingresses(coreV1.NamespaceDefault).Delete(
+	_ = KubeClient.NetworkingV1().Ingresses(coreV1.NamespaceDefault).Delete(
 		context.Background(),
 		name,
 		metaV1.DeleteOptions{},
 	)
 
-	KubeClient.CoreV1().Services(coreV1.NamespaceDefault).Delete(
+	_ = KubeClient.CoreV1().Services(coreV1.NamespaceDefault).Delete(
 		context.Background(),
 		name,
 		metaV1.DeleteOptions{},
