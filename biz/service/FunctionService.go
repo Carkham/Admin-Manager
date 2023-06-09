@@ -23,14 +23,26 @@ func GetFunctionList() (list []model.GetFuncList, err error) {
 		Scan(&funcList)
 
 	for _, v := range funcList {
-		replicasList, _ := utils.GetMetricsList(v.FunctionID)
+		replicasMap, _ := utils.GetMetricsList(v.FunctionID)
+
+		var replicasList []model.FuncReplicasInfo
+		for _, pod := range replicasMap {
+			replicasList = append(replicasList, model.FuncReplicasInfo{
+				NodeName: pod.NodeName,
+				CPUUsage: pod.CpuUsage,
+				MemUsage: pod.MemUsage,
+				GpuUsage: pod.GpuUsage,
+				State:    pod.State,
+			})
+		}
+
 		funcMap[v.FunctionID] = &model.GetFuncList{
 			UserName:     v.Username,
 			FunctionId:   int(v.FunctionID),
 			FunctionName: v.FunctionLabel,
 			TemplateName: v.TemplateLabel,
 			ReplicasInfo: replicasList,
-			State: "Stop",
+			State:        "Stop",
 		}
 	}
 
@@ -39,18 +51,13 @@ func GetFunctionList() (list []model.GetFuncList, err error) {
 		return nil, err
 	}
 
-	depList, err := utils.GetDeploymentList()
-
+	depList, _ := utils.GetDeploymentList()
+	// lll
 	for idStr, v := range depList {
 		id, _ := strconv.ParseInt(idStr, 10, 64)
 		if item, exist := funcMap[id]; exist {
 			item.State = v.Status
 		}
-	}
-
-	if err != nil {
-		log.Printf("[Get Func List] Get Deployment List Info Error: %s", err.Error())
-		return nil, err
 	}
 
 	for _, v := range funcMap {

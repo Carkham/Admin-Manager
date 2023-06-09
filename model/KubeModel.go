@@ -45,6 +45,7 @@ type NodeInfo struct {
 	CpuUse   int    `json:"cpu_usage"`
 	MemUse   int    `json:"memory_usage"`
 	GpuUse   int    `json:"gpu_usage"`
+	PodNum   int    `json:"-"`
 }
 
 type FuncInfo struct {

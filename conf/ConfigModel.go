@@ -7,6 +7,7 @@ type GlobalConfigDefine struct {
 	Redis      RedisConfigDefine      `ini:"Redis"`
 	Webshell   WebShellConfigDefine   `ini:"WebShell"`
 	FileSystem FileSystemConfigDefine `ini:"FileSystem"`
+	Admin      AdminConfigDefine      `ini:"Admin"`
 }
 
 type ServiceConfigDefine struct {
@@ -48,4 +49,10 @@ type WebShellConfigDefine struct {
 type FileSystemConfigDefine struct {
 	RootPath string `ini:"RootPath"`
 	NFSAddr  string `ini:"NFSAddr"`
+}
+
+type AdminConfigDefine struct {
+	Username string `ini:"Username"`
+	Password string `ini:"Password"`
+	Email    string `ini:"Email"`
 }
