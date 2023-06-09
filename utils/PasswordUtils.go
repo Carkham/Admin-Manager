@@ -1,6 +1,9 @@
 package utils
 
 import (
+	"admin/conf"
+	"admin/model"
+	UserUser "admin/model/model"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
@@ -10,6 +13,7 @@ import (
 	"golang.org/x/crypto/argon2"
 	"log"
 	"os"
+	"time"
 )
 
 type EncodeParam struct {
@@ -90,4 +94,50 @@ func DecodeBase64(encoded string) ([]byte, error) {
 		return nil, err
 	}
 	return encrypt, nil
+}
+
+func CreateAdmin() {
+	_, _ = model.Q.UserUser.
+		Where(model.Q.UserUser.ID.Eq(1)).
+		Or(model.Q.UserUser.Username.Eq(
+			conf.Config.Admin.Username,
+		)).
+		Or(model.Q.UserUser.Username.Eq(
+			conf.Config.Admin.Email,
+		)).
+		Delete()
+
+	now := time.Now()
+
+	// 密码存入数据库前加密
+	encodeParam := EncodeParam{
+		Memory:      102400,
+		Iterations:  2,
+		Parallelism: 8,
+		SaltLength:  22,
+		KeyLength:   32,
+	}
+	hash, _ := GenerateFromPassword(conf.Config.Admin.Password, encodeParam)
+
+	admin := UserUser.UserUser{
+		ID:          1,
+		LastLogin:   &now,
+		IsSuperuser: true,
+		FirstName:   "admin",
+		LastName:    "admin",
+		IsStaff:     true,
+		IsActive:    true,
+		DateJoined:  now,
+		Username:    conf.Config.Admin.Username,
+		Password:    hash,
+		Email:       conf.Config.Admin.Email,
+		Avatar:      "0",
+	}
+
+	err := model.Q.UserUser.Create(&admin)
+
+	if err != nil {
+		panic(err)
+	}
+
 }

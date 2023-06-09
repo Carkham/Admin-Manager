@@ -12,6 +12,7 @@ import (
 func main() {
 	InitLogger()
 	model.DBInit()
+	utils.CreateAdmin()
 	utils.InitRedisClient()
 	utils.KubeClientInit(conf.Config.K8S.ConfigPath)
 	r := gin.Default()
