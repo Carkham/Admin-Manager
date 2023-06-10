@@ -127,11 +127,11 @@ func CreateAdmin() {
 		LastName:    "admin",
 		IsStaff:     true,
 		IsActive:    true,
-		DateJoined:  now,
-		Username:    conf.Config.Admin.Username,
-		Password:    hash,
-		Email:       conf.Config.Admin.Email,
-		Avatar:      "0",
+		//DateJoined:  now,
+		Username: conf.Config.Admin.Username,
+		Password: hash,
+		Email:    conf.Config.Admin.Email,
+		Avatar:   "0",
 	}
 
 	err := model.Q.UserUser.Create(&admin)

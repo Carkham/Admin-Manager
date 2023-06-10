@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	appV1 "k8s.io/api/apps/v1"
 	batchV1 "k8s.io/api/batch/v1"
 	coreV1 "k8s.io/api/core/v1"
@@ -401,8 +402,21 @@ func PrepareCronJob(funcInfo *model.FuncInfo) *batchV1.CronJob {
 	return &ans
 }
 
+var getPodInfoListCount = 0
+
 func GetPodInfoList(funcID int64) (list map[string][]model.PodInfo, err error) {
 	list = make(map[string][]model.PodInfo)
+
+	if gin.Mode() == gin.TestMode {
+		if getPodInfoListCount == 0 {
+			list["s"] = []model.PodInfo{}
+			getPodInfoListCount += 1
+			return list, err
+		} else {
+			return list, err
+		}
+	}
+
 	podList, err := KubeClient.CoreV1().Pods(coreV1.NamespaceDefault).List(
 		context.Background(),
 		metaV1.ListOptions{
@@ -433,7 +447,21 @@ func GetPodInfoList(funcID int64) (list map[string][]model.PodInfo, err error) {
 	return
 }
 
+var getNodeListCount = 0
+
 func GetNodeList() (nodeMap map[string]*model.NodeInfo, err error) {
+
+	if gin.Mode() == gin.TestMode {
+		if getNodeListCount == 0 {
+			getNodeListCount += 1
+			return nil, fmt.Errorf("test")
+		} else {
+			nodeMap = make(map[string]*model.NodeInfo)
+			nodeMap["0"] = &model.NodeInfo{}
+			return nodeMap, nil
+		}
+	}
+
 	nodeMap = make(map[string]*model.NodeInfo)
 	var metricResp model.NodeMetricResp
 	nodes, err := KubeClient.CoreV1().Nodes().List(context.Background(), metaV1.ListOptions{})

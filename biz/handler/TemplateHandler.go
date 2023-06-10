@@ -6,7 +6,6 @@ import (
 	"admin/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 )
 
@@ -14,19 +13,13 @@ func CreateTemplate(ctx *gin.Context) {
 	var req model.CreateTemplateReq
 	err := ctx.Bind(&req)
 	if err != nil {
-		errMsg := fmt.Sprintf("[Create Template] Parse Parameter Error: %s", err.Error())
-		log.Print(errMsg)
-		jsonResp := utils.SetBadRequestResp(nil, errMsg)
-		ctx.JSON(http.StatusBadRequest, jsonResp)
+		throwError(ctx, fmt.Sprintf("[Create Template] Parse Parameter Error: %s", err.Error()), http.StatusBadRequest)
 		return
 	}
 
 	// 关键参数不能为空
 	if req.TemplateLabel == "" || req.ImageName == "" {
-		errMsg := fmt.Sprintf("[Create Template] Parse Parameter Error: Parameter can not be none")
-		log.Print(errMsg)
-		jsonResp := utils.SetBadRequestResp(nil, errMsg)
-		ctx.JSON(http.StatusBadRequest, jsonResp)
+		throwError(ctx, fmt.Sprintf("[Create Template] Parse Parameter Error: Parameter can not be none"), http.StatusBadRequest)
 		return
 	}
 
@@ -42,10 +35,7 @@ func CreateTemplate(ctx *gin.Context) {
 	}
 	err = model.Q.Template.Create(&newTemplate)
 	if err != nil {
-		errMsg := fmt.Sprintf("[Create Template] Create Template Error: %s", err.Error())
-		log.Print(errMsg)
-		jsonResp := utils.SetBadRequestResp(nil, errMsg)
-		ctx.JSON(http.StatusInternalServerError, jsonResp)
+		throwError(ctx, fmt.Sprintf("[Create Template] Create Template Error: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
 

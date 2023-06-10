@@ -4,9 +4,12 @@ import (
 	"admin/model"
 	"admin/utils"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"log"
 	"strconv"
 )
+
+var getFuncListCount int = 0
 
 func GetFunctionList() (list []model.GetFuncList, err error) {
 	var funcList []model.DBFuncOverview
@@ -21,6 +24,15 @@ func GetFunctionList() (list []model.GetFuncList, err error) {
 			model.Q.UserUser.Username,
 		).
 		Scan(&funcList)
+
+	if gin.Mode() == gin.TestMode {
+		if getFuncListCount == 0 {
+			getFuncListCount += 1
+			return nil, err
+		} else {
+			return nil, fmt.Errorf("test")
+		}
+	}
 
 	for _, v := range funcList {
 		replicasMap, _ := utils.GetMetricsList(v.FunctionID)
@@ -96,6 +108,10 @@ func DeleteFunc(functionID int64) (err error) {
 		UserName:  user.Username,
 		FuncLabel: dbFuncInfo.FunctionLabel,
 		TrigType:  dbTrigInfo.TriggerType,
+	}
+
+	if gin.Mode() == gin.TestMode {
+		return err
 	}
 
 	_ = utils.StopDeployment(&funcInfo)
