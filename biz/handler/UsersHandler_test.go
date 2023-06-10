@@ -144,7 +144,7 @@ func TestCreateUser(t *testing.T) {
 			expectedResponse: model.JSONResp{
 				Code:    -1,
 				Message: "参数格式错误",
-				Extra:   "[Create User] Create User Error: open private.pem: The system cannot find the file specified.",
+				Extra:   "[Create User] Create User Error: open private.pem: no such file or directory",
 			},
 		},
 	}
