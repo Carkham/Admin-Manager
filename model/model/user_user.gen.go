@@ -19,11 +19,11 @@ type UserUser struct {
 	LastName    string     `gorm:"column:last_name;type:varchar(150);not null" json:"last_name"`
 	IsStaff     bool       `gorm:"column:is_staff;type:tinyint(1);not null" json:"is_staff"`
 	IsActive    bool       `gorm:"column:is_active;type:tinyint(1);not null" json:"is_active"`
-	DateJoined  time.Time  `gorm:"column:date_joined;type:datetime(6);not null" json:"date_joined"`
-	Username    string     `gorm:"column:username;type:varchar(16);not null" json:"username"`
-	Password    string     `gorm:"column:password;type:varchar(256);not null" json:"password"`
-	Email       string     `gorm:"column:email;type:varchar(32);not null" json:"email"`
-	Avatar      string     `gorm:"column:avatar;type:varchar(4);not null" json:"avatar"`
+	//DateJoined  time.Time  `gorm:"column:date_joined;type:datetime(6);not null" json:"date_joined"`
+	Username string `gorm:"column:username;type:varchar(16);not null" json:"username"`
+	Password string `gorm:"column:password;type:varchar(256);not null" json:"password"`
+	Email    string `gorm:"column:email;type:varchar(32);not null" json:"email"`
+	Avatar   string `gorm:"column:avatar;type:varchar(4);not null" json:"avatar"`
 }
 
 // TableName UserUser's table name

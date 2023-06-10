@@ -11,17 +11,20 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"time"
 )
+
+func throwError(ctx *gin.Context, errMsg string, code int) {
+	log.Print(errMsg)
+	jsonResp := utils.SetBadRequestResp(nil, errMsg)
+	ctx.JSON(code, jsonResp)
+	return
+}
 
 func GetUsersInfo(ctx *gin.Context) {
 	var userUserList []UserUser.UserUser
 	err := model.Q.UserUser.Scan(&userUserList)
 	if err != nil {
-		errMsg := fmt.Sprintf("[Get UsersInfo] Get UsersInfo Error: %s", err.Error())
-		log.Print(errMsg)
-		jsonResp := utils.SetBadRequestResp(nil, errMsg)
-		ctx.JSON(http.StatusInternalServerError, jsonResp)
+		throwError(ctx, fmt.Sprintf("[Get UsersInfo] Get UsersInfo Error: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
 
@@ -54,19 +57,13 @@ func CreateUser(ctx *gin.Context) {
 	var req model.CreateUserReq
 	err := ctx.Bind(&req)
 	if err != nil {
-		errMsg := fmt.Sprintf("[Create User] Parse Parameter Error: %s", err.Error())
-		log.Print(errMsg)
-		jsonResp := utils.SetBadRequestResp(nil, errMsg)
-		ctx.JSON(http.StatusBadRequest, jsonResp)
+		throwError(ctx, fmt.Sprintf("[Create User] Parse Parameter Error: %s", err.Error()), http.StatusBadRequest)
 		return
 	}
 
 	// 用户名密码不能为空
 	if req.Username == "" || req.Password == "" {
-		errMsg := fmt.Sprintf("[Create User] Parse Parameter Error: need username or password")
-		log.Print(errMsg)
-		jsonResp := utils.SetBadRequestResp(nil, errMsg)
-		ctx.JSON(http.StatusBadRequest, jsonResp)
+		throwError(ctx, fmt.Sprintf("[Create User] Parse Parameter Error: need username or password"), http.StatusBadRequest)
 		return
 	}
 
@@ -78,17 +75,11 @@ func CreateUser(ctx *gin.Context) {
 		model.Q.UserUser.Email.Eq(req.Email),
 	).Scan(&duplicatedUsers)
 	if err != nil {
-		errMsg := fmt.Sprintf("[Create User] Create User Error: %s", err.Error())
-		log.Print(errMsg)
-		jsonResp := utils.SetBadRequestResp(nil, errMsg)
-		ctx.JSON(http.StatusInternalServerError, jsonResp)
+		throwError(ctx, fmt.Sprintf("[Create User] Create User Error: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
 	if len(duplicatedUsers) > 0 {
-		errMsg := fmt.Sprintf("[Create User] Create User Error: duplicated username or email")
-		log.Print(errMsg)
-		jsonResp := utils.SetBadRequestResp(nil, errMsg)
-		ctx.JSON(http.StatusBadRequest, jsonResp)
+		throwError(ctx, fmt.Sprintf("[Create User] Create User Error: duplicated username or email"), http.StatusBadRequest)
 		return
 	}
 
@@ -96,18 +87,12 @@ func CreateUser(ctx *gin.Context) {
 		// rsa加密密码解密
 		cipherText, err := utils.DecodeBase64(req.Password)
 		if err != nil {
-			errMsg := fmt.Sprintf("[Create User] Create User Error: %s", err.Error())
-			log.Print(errMsg)
-			jsonResp := utils.SetBadRequestResp(nil, errMsg)
-			ctx.JSON(http.StatusInternalServerError, jsonResp)
+			throwError(ctx, fmt.Sprintf("[Create User] Create User Error: %s", err.Error()), http.StatusInternalServerError)
 			return
 		}
 		req.Password, err = utils.RSADecrypt(cipherText)
 		if err != nil {
-			errMsg := fmt.Sprintf("[Create User] Create User Error: %s", err.Error())
-			log.Print(errMsg)
-			jsonResp := utils.SetBadRequestResp(nil, errMsg)
-			ctx.JSON(http.StatusInternalServerError, jsonResp)
+			throwError(ctx, fmt.Sprintf("[Create User] Create User Error: %s", err.Error()), http.StatusInternalServerError)
 			return
 		}
 	}
@@ -123,27 +108,21 @@ func CreateUser(ctx *gin.Context) {
 
 	hash, err := utils.GenerateFromPassword(req.Password, encodeParam)
 	if err != nil {
-		errMsg := fmt.Sprintf("[Create User] Create User Error: %s", err.Error())
-		log.Print(errMsg)
-		jsonResp := utils.SetBadRequestResp(nil, errMsg)
-		ctx.JSON(http.StatusInternalServerError, jsonResp)
+		throwError(ctx, fmt.Sprintf("[Create User] Create User Error: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
 
 	// 保存
 	var newUser = UserUser.UserUser{
-		Username:   req.Username,
-		Email:      req.Email,
-		Password:   hash,
-		IsStaff:    req.IsAdmin,
-		DateJoined: time.Now(),
+		Username: req.Username,
+		Email:    req.Email,
+		Password: hash,
+		IsStaff:  req.IsAdmin,
+		//DateJoined: time.Now(),
 	}
 	err = model.Q.UserUser.Create(&newUser)
 	if err != nil {
-		errMsg := fmt.Sprintf("[Create User] Create User Error: %s", err.Error())
-		log.Print(errMsg)
-		jsonResp := utils.SetBadRequestResp(nil, errMsg)
-		ctx.JSON(http.StatusInternalServerError, jsonResp)
+		throwError(ctx, fmt.Sprintf("[Create User] Create User Error: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
 
@@ -160,10 +139,7 @@ func DeleteUser(ctx *gin.Context) {
 	userIDStr := ctx.Param("user_id")
 	userID, err := strconv.ParseInt(userIDStr, 10, 64)
 	if err != nil {
-		errMsg := fmt.Sprintf("[Delete User] Parse Parameter Error: %s", err.Error())
-		log.Print(errMsg)
-		jsonResp := utils.SetBadRequestResp(nil, errMsg)
-		ctx.JSON(http.StatusBadRequest, jsonResp)
+		throwError(ctx, fmt.Sprintf("[Delete User] Parse Parameter Error: %s", err.Error()), http.StatusBadRequest)
 		return
 	}
 
@@ -173,10 +149,7 @@ func DeleteUser(ctx *gin.Context) {
 	for _, v := range functions {
 		runningList, _ := utils.GetPodInfoList(v.FunctionID)
 		if len(runningList) > 0 {
-			errMsg := fmt.Sprintf("[Delete User] Delete User Error: function is still running")
-			log.Print(errMsg)
-			jsonResp := utils.SetServerErrorResp(nil, errMsg)
-			ctx.JSON(http.StatusBadRequest, jsonResp)
+			throwError(ctx, fmt.Sprintf("[Delete User] Delete User Error: function is still running"), http.StatusBadRequest)
 			return
 		}
 	}
@@ -188,10 +161,7 @@ func DeleteUser(ctx *gin.Context) {
 
 	_, err = model.Q.UserUser.Where(model.Q.UserUser.ID.Eq(userID)).Delete()
 	if err != nil {
-		errMsg := fmt.Sprintf("[Delete User] Delete User Error: %s", err.Error())
-		log.Print(errMsg)
-		jsonResp := utils.SetBadRequestResp(nil, errMsg)
-		ctx.JSON(http.StatusInternalServerError, jsonResp)
+		throwError(ctx, fmt.Sprintf("[Delete User] Delete User Error: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
 

@@ -6,6 +6,7 @@ import (
 	"admin/utils"
 	"encoding/json"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"log"
 )
 
@@ -62,6 +63,10 @@ func StartFunc(funcID int64) (err error) {
 		return
 	}
 
+	if gin.Mode() == gin.TestMode {
+		return err
+	}
+
 	funcInfo := model.FuncInfo{
 		FunctionID:     funcID,
 		UserID:         dbFuncInfo.UserID,
@@ -95,6 +100,7 @@ func StopFunc(funcID int64) (err error) {
 
 	if err != nil {
 		log.Printf("[Stop Function] Query Function Info Error: %s", err.Error())
+		return err
 	}
 
 	dbTrigInfo, err := model.Q.Trigger.Where(
@@ -118,6 +124,9 @@ func StopFunc(funcID int64) (err error) {
 		TrigType:  dbTrigInfo.TriggerType,
 	}
 
+	if gin.Mode() == gin.TestMode {
+		return err
+	}
 	err = utils.StopDeployment(&funcInfo)
 
 	if err != nil {
